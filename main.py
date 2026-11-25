@@ -242,7 +242,7 @@ def run_job(ip, serial, stage):
 
 
 # ---------- web ----------
-TITLE = "Dell Server Log Collection Automation Server"
+TITLE = "Dell Server QA Automation"
 CSS = """
 :root{--bg:#f4f6f8;--card:#fff;--line:#e3e7ec;--text:#1f2933;--muted:#6b7785;--accent:#0b6bcb;--ok:#1a7f37;--bad:#c62828}
 *{box-sizing:border-box}

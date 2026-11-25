@@ -6,7 +6,7 @@ Dell Server QA Automation: Day-0 staging automation for Dell servers, used acros
 
 The app collects the TSR and Lifecycle log from Dell iDRACs through the Redfish API and shows them on a FastHTML dashboard.
 
-Owner: Mingfei, Configuration Technician I, WWT AIC Singapore.
+Owner: Mingfei, L3 Configuration Technician I, WWT AIC Singapore.
 
 ## Start here
 
@@ -38,7 +38,7 @@ Owner: Mingfei, Configuration Technician I, WWT AIC Singapore.
 ### Rule 4: Repository style
 
 - File names are lowercase-hyphenated, for example `example-notes.md`.
-- Exceptions that follow tool conventions: `README.md`, `CHANGELOG.md`, `CLAUDE.md`, `Dockerfile`, `compose.yaml`.
+- Exceptions that follow tool conventions: `README.md`, `CHANGELOG.md`, `LICENSE`, `CLAUDE.md`, `Dockerfile`, `compose.yaml`.
 - Separate sections with blank lines.
 - One idea per paragraph.
 

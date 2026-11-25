@@ -72,4 +72,8 @@ Proof of concept complete: the TSR and the Lifecycle log were collected from rea
 
 ## Owner
 
-Mingfei, AIC Singapore.
+Mingfei, L3 Configuration Technician I, WWT AIC Singapore.
+
+## License
+
+MIT. See the `LICENSE` file.

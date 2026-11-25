@@ -17,7 +17,7 @@ Everything below is done from the dashboard in a browser.
 
 Documentation and files:
 
-- The page title is `Dell Server Log Collection Automation Server`. The `Documentation` and `Files` links are on the same row, at the right.
+- The page title is `Dell Server QA Automation`. The `Documentation` and `Files` links are on the same row, at the right.
 - The `Documentation` link opens `/docs` in a new tab. It shows the README and the pages in `docs/`, read from the copies inside the image. Links between the pages work offline.
 - The `Files` link opens the copyparty file browser on port 3923 of the same host. It lists `data/<serial>/<stage>/`, including servers that were removed from the list.
 - `Files` is read-only for everyone: browse, download and zip. Upload, delete and rename are refused. `data/` is also mounted read-only in that container.
