@@ -1,0 +1,9 @@
+.git
+PortableGit
+data
+docs/design
+docs/slides
+mock
+ops
+__pycache__
+*.pyc
