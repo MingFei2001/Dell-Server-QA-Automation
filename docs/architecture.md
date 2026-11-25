@@ -8,13 +8,13 @@ The app collects the TSR and the Lifecycle log from each Dell server through the
 
 In scope:
 
-- Collect TSR and Lifecycle log before SSD integration, after SSD integration, and on demand.
+- Collect TSR and Lifecycle log before the work on a server (Pre), after it (Post), and on demand (General). The work can be any staging step, such as installing a part.
 - Save files under the server's serial number.
 - Show status and download links on one dashboard.
 
 Out of scope:
 
-- Physical SSD integration.
+- The physical work on the server.
 - Burn-in: the 24-hour run, uptime logs and the power graph screenshot. These stay manual.
 - Any change to iDRAC, BIOS, firmware, storage or network settings.
 - One exception: the SupportAssist EULA is accepted once per iDRAC if it is not accepted yet. The TSR export needs it.
@@ -65,7 +65,7 @@ The software runs in an Ubuntu 26.04 VM on a hypervisor (Proxmox) in the lab. Do
 
 - Cost: a collection is a fixed sequence of HTTP calls ([Redfish calls](redfish-reference.md)). An agent would spend tokens on every run and add nothing.
 - Offline use: the app runs on the lab network without internet. An agent depends on an external service and stops working in a network outage.
-- Data and credentials: iDRAC logins and collected logs stay on the lab network. Nothing is sent to an outside AI service. Confirm the customer's data rules before the pilot ([Open item 8](status.md#open-items-and-unverified)).
+- Data and credentials: iDRAC logins and collected logs stay on the lab network. Nothing is sent to an outside AI service. The collected data carries no risk, so no data handling rules are set ([Open items](status.md#open-items)).
 - An agent was used during development to write and test the code. The finished app contains none.
 
 ### Build logic

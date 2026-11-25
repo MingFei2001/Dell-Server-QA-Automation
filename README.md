@@ -59,6 +59,7 @@ The same pages are shown at `/docs` on the dashboard.
 ├─ setup.sh           set up a fresh Ubuntu VM
 ├─ .env.example       template for .env
 ├─ docs/              documentation (Markdown)
+│  ├─ design/         design overview
 │  └─ slides/         demo deck and reference deck
 ├─ data/              evidence and database (not in git)
 └─ CHANGELOG.md       version history
@@ -68,7 +69,7 @@ See [Development](docs/development.md) for every file.
 
 ## Status
 
-Proof of concept complete: the TSR and the Lifecycle log were collected from real servers on iDRAC firmware 7.20.60.50. The next stage is a pilot on one real server. See [Status](docs/status.md) for the open items.
+Working. The TSR and the Lifecycle log were collected from real 16G servers on iDRAC firmware 7.10.30.00 and 7.20.60.50, including from the dashboard by a person. 14G firmware 3.21.26.22 is not supported yet. See [Status](docs/status.md) for the open items.
 
 ## Owner
 

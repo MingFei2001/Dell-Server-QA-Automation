@@ -29,7 +29,7 @@ Decisions are grouped by topic. The date is when the decision was made. The earl
 | 2026-11-18 | Serial number means the Dell Service Tag (Redfish `SKU`). Folders are named by serial, not hostname. | Same number as the box label |
 | 2026-11-18 | TSR contents `HWData` and `TTYLogs`. The TSR is streamed to disk with a 30 minute timeout (2026-11-20). | The default choice. The TSR can be large and slow. Tune in the pilot. |
 | 2026-11-23 | The EULA counts as accepted when `Interface` in the status response is not null. A TSR job is finished when the poll response `Location` header contains `sacollect.zip`. | Taken from Dell's `SupportAssistCollectionLocalREDFISH.py`. The second rule replaces waiting for `JobState` `Completed`. |
-| 2026-11-23 | Target iDRAC firmware 7.00.00 and above | Local export works on 7.20.60.50 and fails on 3.21.26.22. Older firmware is a later discussion ([Open item 10](status.md#open-items-and-unverified)). |
+| 2026-11-23 | Target iDRAC firmware 7.00.00 and above | Local export works on 7.20.60.50 and fails on 3.21.26.22. Older firmware is a later discussion ([Open item 10](status.md#open-items)). |
 
 ## Naming and layout
 
@@ -74,4 +74,8 @@ Decisions are grouped by topic. The date is when the decision was made. The earl
 |---|---|---|
 | 2026-11-18 | Burn-in is not automated. | Evidence is the power graph screenshot from the iDRAC web interface. |
 | 2026-11-18 | Nightly rsync is planned, not enabled. | No NAS yet |
+| 2026-11-25 | No data handling rules for the collected files. Take care only when publishing code. | The files stay on the lab network and carry no risk (owner). |
+| 2026-11-25 | VM snapshots are manual, or a Proxmox schedule if set up. Not a requirement. | The container can be rebuilt from the repository (owner). |
+| 2026-11-25 | The dashboard shows iDRAC version and firmware in one column, read from `/redfish/v1/Managers/iDRAC.Embedded.1`. The version name comes from the generation in the Manager `Model`. | Shows at a glance which servers can use the Redfish collection. Read-only. |
+| 2026-11-25 | The project is described as generic log collection for Dell servers, not for one client project. A design overview is kept in git as `docs/design/design-overview.md`. The original proposal files stay local. | The proposal names the client. The stage names Pre, Post and General stay, so existing files and names do not change. |
 | 2026-11-23 | Test on real iDRACs instead of a mock. Not built for now: bulk add, checkbox batch collect, a warning for post before pre. | Two real machines were available. Decided with the user: a person should check that each server was added and answers ping. The reward does not justify the effort yet. |

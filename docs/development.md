@@ -44,7 +44,7 @@ Where things are in `main.py`:
 Redfish is a standard API, but the log collection actions are vendor specific. Nothing below is verified for any other vendor. Check each point against that vendor's official Redfish documentation first.
 
 - Stays the same: the dashboard, the database, the job pool, the file layout and checksums, the status light, Docker, `setup.sh`, and the hosting (a VM on a hypervisor).
-- Changes in `main.py`: the identity call and fields in `identity` (Dell uses `SKU` and `Model` at `/redfish/v1/Systems/System.Embedded.1`), the collection calls in `collect_tsr` and `collect_lc` (Dell uses `DellLCService` actions, which are Dell OEM), the job polling in `wait_job`, and the default login in `.env`.
+- Changes in `main.py`: the identity call and fields in `identity` (Dell uses `SKU` and `Model` at `/redfish/v1/Systems/System.Embedded.1`), `idrac_info` (the version and firmware from `/redfish/v1/Managers/iDRAC.Embedded.1`), the collection calls in `collect_tsr` and `collect_lc` (Dell uses `DellLCService` actions, which are Dell OEM), the job polling in `wait_job`, and the default login in `.env`.
 - Changes in the text: the page title, the stage names if the workflow differs, and the pages [iDRAC access](getting-started.md#idrac-access) and [Redfish calls](redfish-reference.md).
 
 ## Testing

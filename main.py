@@ -57,6 +57,8 @@ with db() as con:
         con.execute("ALTER TABLE devices ADD COLUMN model TEXT")
     if "own_login" not in cols:  # flag only: the password itself is never stored
         con.execute("ALTER TABLE devices ADD COLUMN own_login INTEGER DEFAULT 0")
+    if "idrac" not in cols:
+        con.execute("ALTER TABLE devices ADD COLUMN idrac TEXT")
     # carry over the last status per server from the old single-status table, once, then drop it.
     # Keeping it would bring back deleted status rows at every restart.
     if con.execute("SELECT 1 FROM sqlite_master WHERE name='jobs'").fetchone():
@@ -116,21 +118,42 @@ def identity(ip, creds=None):
     return j["SKU"], j.get("Model") or ""
 
 
+IDRAC_BY_GEN = {12: "iDRAC7", 13: "iDRAC8", 14: "iDRAC9", 15: "iDRAC9", 16: "iDRAC9", 17: "iDRAC10"}
+
+
+def idrac_info(ip, creds=None):
+    """iDRAC version and firmware as one text, for example 'iDRAC9 7.10.30.00'. Read-only, one Redfish call."""
+    r = rf(ip, "GET", "/redfish/v1/Managers/iDRAC.Embedded.1", creds=creds)
+    r.raise_for_status()
+    j = r.json()
+    m = re.match(r"(\d+)G", j.get("Model") or "")  # the Manager model reads like '16G Monolithic'
+    name = IDRAC_BY_GEN.get(int(m.group(1)), "") if m else ""
+    return f"{name} {j.get('FirmwareVersion') or ''}".strip()
+
+
 model_tried = {}  # ip -> time of the last attempt, so a bad password is not retried in a loop
+idrac_read = {}  # ip -> time of the last good read; the firmware is read again after IDRAC_REFRESH seconds
+IDRAC_REFRESH = 1800
 
 
 def fill_models():
     with db() as con:
-        todo = [r["ip"] for r in con.execute(
-            "SELECT ip, own_login FROM devices WHERE model IS NULL OR model=''") if not r["own_login"] or r["ip"] in CREDS]
+        todo = [r["ip"] for r in con.execute("SELECT ip, own_login FROM devices")
+                if not r["own_login"] or r["ip"] in CREDS]
+        have = {r["ip"]: r for r in con.execute("SELECT ip, model, idrac FROM devices")}
     for ip in todo:
-        if LIGHT.get(ip) != "green" or time.time() - model_tried.get(ip, 0) < 600:
+        r = have[ip]
+        missing = not r["model"] or not r["idrac"]
+        stale = time.time() - idrac_read.get(ip, 0) > IDRAC_REFRESH
+        if not (missing or stale) or LIGHT.get(ip) != "green" or time.time() - model_tried.get(ip, 0) < 600:
             continue
         model_tried[ip] = time.time()
         try:
-            model = identity(ip)[1] or "-"
+            model = r["model"] or identity(ip)[1] or "-"
+            info = idrac_info(ip)
             with db() as con:
-                con.execute("UPDATE devices SET model=? WHERE ip=?", (model, ip))
+                con.execute("UPDATE devices SET model=?, idrac=? WHERE ip=?", (model, info, ip))
+            idrac_read[ip] = time.time()
         except Exception as e:
             print(f"[{ip}] model lookup failed: {e!r}", flush=True)
 
@@ -347,7 +370,7 @@ def login_state(d):
 
 def row_ver(ip, snap):
     d, st, latest = snap
-    key = (d["serial"], d["model"], LIGHT.get(ip), login_state(d), [status_text(stage_status(st, latest, s)) for s in STAGES],
+    key = (d["serial"], d["model"], d["idrac"], LIGHT.get(ip), login_state(d), [status_text(stage_status(st, latest, s)) for s in STAGES],
            sorted((k, f["id"]) for k, f in latest.items()))
     return hashlib.md5(repr(key).encode()).hexdigest()[:10]
 
@@ -373,7 +396,7 @@ def row(ip):
     ip_cell = Td(Span(ip, cls="ip"), Div(ls, cls="st fail" if ls == "login needed" else "st",
                          title="Login typed in the Add box, kept in memory only" if ls == "own login"
                          else "Enter user and password for this IP in the Add box") if ls else "")
-    return Tr(Td(Span(cls=f"dot {LIGHT.get(ip, 'grey')}")), ip_cell, Td(d["serial"]), Td(d["model"] or ""),
+    return Tr(Td(Span(cls=f"dot {LIGHT.get(ip, 'grey')}")), ip_cell, Td(d["serial"]), Td(d["model"] or ""), Td(d["idrac"] or ""),
               *cells,
               Td(Button("Remove", cls="danger", title=f"Remove {ip} from the list", hx_post=f"/remove/{ip}",
                         hx_target="#devices", hx_swap="outerHTML",
@@ -383,7 +406,7 @@ def row(ip):
 
 def table():
     ips = device_ips()
-    head = Tr(Th(""), Th("iDRAC IP"), Th("Serial number"), Th("Model"),
+    head = Tr(Th(""), Th("iDRAC IP"), Th("Serial number"), Th("Model"), Th("iDRAC / firmware"),
               Th("Pre", title="Pre-integration"), Th("Post", title="Post-integration"),
               Th("General"), Th(""))
     return Div(Table(Thead(head), Tbody(*[row(ip) for ip in ips])),
@@ -517,19 +540,23 @@ def post(ip: str, user: str = "", password: str = ""):
         print(f"[{ip}] add failed: {e!r}", flush=True)
         return table(), msg(f"{ip}: cannot read the iDRAC ({type(e).__name__}). "
                             f"Not {'changed' if listed else 'added'}.", False)
+    try:
+        info = idrac_info(ip, creds)
+    except Exception:
+        info = ""  # shown later by the background read
     if listed:
         with db() as con:
             d = con.execute("SELECT serial FROM devices WHERE ip=?", (ip,)).fetchone()
             if d and d["serial"] != serial:
                 return table(), msg(f"{ip}: serial is {serial}, the list has {d['serial']}. Login not set.", False)
-            con.execute("UPDATE devices SET own_login=1, model=COALESCE(NULLIF(model,''), ?) WHERE ip=?",
-                        (model, ip))
+            con.execute("UPDATE devices SET own_login=1, model=COALESCE(NULLIF(model,''), ?), "
+                        "idrac=COALESCE(NULLIF(?,''), idrac) WHERE ip=?", (model, info, ip))
         CREDS[ip] = creds
         return table(), msg(f"Login set for {ip}. Kept in memory until the app restarts."), \
             HtmxResponseHeaders(trigger="clear-add")
     with db() as con:
-        con.execute("INSERT INTO devices(ip, serial, added, model, own_login) VALUES(?,?,?,?,?)",
-                    (ip, serial, datetime.now().isoformat(timespec="seconds"), model, 1 if creds else 0))
+        con.execute("INSERT INTO devices(ip, serial, added, model, own_login, idrac) VALUES(?,?,?,?,?,?)",
+                    (ip, serial, datetime.now().isoformat(timespec="seconds"), model, 1 if creds else 0, info))
     if creds:
         CREDS[ip] = creds
     LIGHT[ip] = "green"

@@ -18,7 +18,7 @@
 - Restore the list after a bad change: stop the containers (`docker compose down`), copy the backup over `data/state.db`, start them again.
 - Rollback of the `Files` service: restore the previous `compose.yaml` and `main.py`, then run `docker compose up -d --build --remove-orphans`. Evidence and the list are not touched.
 - Rollback of a code change: keep a copy of the previous `main.py`, `README.md`, `CHANGELOG.md` and `docs/` in `~/backups/code-before-<reason>/` before each deploy, copy them back and run `docker compose up -d --build`.
-- Optional extra rollback layer: a hypervisor snapshot of the VM before a big change. A snapshot also rolls back `data/` (evidence and the list), so do not use it for routine changes. The backup and snapshot policy is an open item ([Status and open items](status.md)).
+- Optional extra rollback layer: a hypervisor snapshot of the VM before a big change. A snapshot also rolls back `data/` (evidence and the list), so do not use it for routine changes. Snapshots are manual and not required, because the container can be rebuilt from the repository.
 - Update: copy the new project files to the server, then run `docker compose up -d --build`.
 - Rollback: restore the previous project files and run `docker compose up -d --build`.
 - Evidence stays in `data/` through rebuilds.

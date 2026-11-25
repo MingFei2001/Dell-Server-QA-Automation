@@ -6,7 +6,8 @@ The base path is `/redfish/v1/Managers/iDRAC.Embedded.1/Oem/Dell/DellLCService`.
 
 | Purpose | Call | Note |
 |---|---|---|
-| Serial number | `GET /redfish/v1/Systems/System.Embedded.1` | Field `SKU` |
+| Serial number and model | `GET /redfish/v1/Systems/System.Embedded.1` | Fields `SKU` and `Model` |
+| iDRAC version and firmware | `GET /redfish/v1/Managers/iDRAC.Embedded.1` | Fields `Model` (for example `16G Monolithic`, which gives the iDRAC version: 12G iDRAC7, 13G iDRAC8, 14G to 16G iDRAC9, 17G iDRAC10) and `FirmwareVersion`. Read-only. |
 | Check the action exists | `GET <base>` | Response lists `SupportAssistCollection` |
 | EULA status | `POST <base>/Actions/DellLCService.SupportAssistGetEULAStatus` | Before the first export. Accepted when the response field `Interface` is not null (Dell's script). |
 | Accept the EULA | `POST <base>/Actions/DellLCService.SupportAssistAcceptEULA` | Only if not accepted |
@@ -22,6 +23,7 @@ Firmware compatibility:
 
 | Firmware | Result |
 |---|---|
+| iDRAC9 16G, 7.10.30.00 | Works. Tested from the dashboard by the owner on 2026-11-25. |
 | iDRAC9 16G, 7.20.60.50 | Works. The TSR and the Lifecycle log are saved and the checksums match. |
 | iDRAC9 14G, 3.21.26.22 | Not supported. `DellLCService` returns 404 at the path above and at `/redfish/v1/Dell/Managers/iDRAC.Embedded.1/DellLCService`. The app reports `Failed: action not supported`. |
 

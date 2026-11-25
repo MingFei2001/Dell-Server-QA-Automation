@@ -13,7 +13,7 @@ Owner: Mingfei, L3 Configuration Technician I, WWT AIC Singapore.
 1. Read `README.md` for the overview and the links to the docs.
 2. Read `docs/status.md` for the current stage and the open items, `docs/decisions.md` for the decisions and `docs/redfish-reference.md` for the Redfish call table.
 3. Read `docs/design/chat-export-2026-11-20.txt` (local only, not in git) for the full design conversation, only if the docs do not answer the question.
-4. Read the technical proposal in `docs/design/` only if neither answers the question.
+4. Read `docs/design/design-overview.md` (in git) for the design rationale. The original proposal files in `docs/design/` are local only and name the client.
 
 ## Rules for agents
 
@@ -44,15 +44,14 @@ Owner: Mingfei, L3 Configuration Technician I, WWT AIC Singapore.
 
 ## Current status
 
-- Stage 2 is done (2026-11-23). The code and Docker files are rebuilt and committed.
-- The app was built and run on a test VM and collected a TSR and Lifecycle log from a real iDRAC (firmware 7.20.60.50).
-- Next: Stage 3, pilot one real server on the existing VM. Find the firmware on the target servers first.
-- Open: a legacy method for firmware without `DellLCService` (3.21.26.22). See `docs/status.md`.
+- Stages 1 to 3 are done. The owner tested a real 16G server (firmware 7.10.30.00) from the dashboard on 2026-11-25 and calls the project a success. No further testing is planned.
+- Released as `v0.22.0-alpha` on GitHub (public, MIT).
+- Open: a legacy method for firmware without `DellLCService` (3.21.26.22), racadm is the candidate; a NAS; a fixed VM address. See `docs/status.md`.
+- Later, with more servers: tune `MAX_PARALLEL` and `TSR_TIMEOUT_MIN`.
 
 ## Known issues
 
 - `.env` in the repository holds the Dell defaults. The test VM has its own `.env` that the user edits. Never copy the local `.env` over it. The dashboard calls it the default login and does not mention `.env`; the maintenance steps are in `docs/operations.md`.
-- Local TSR export on the target servers' firmware, the `SKU` match with the box label and EULA acceptance are unverified. See `docs/status.md`.
 - The test VM address and user are not stored in the repository (DHCP, may change; they are in the agent memory file `reference-test-vm.md`). It uses key login, passwordless sudo, project in `~/idrac-day0-staging`. The VM runs on a hypervisor (Proxmox) and is also the pilot VM. Write code locally first, then copy to the VM.
 - Git is initialised (2026-11-23, branch `main`). Use the installed `git` command (winget, 2.56.1).
 

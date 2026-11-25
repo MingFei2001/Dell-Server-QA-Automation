@@ -7,9 +7,9 @@
 Everything below is done from the dashboard in a browser.
 
 1. Power on the server and wait for the iDRAC to come up.
-2. Type the iDRAC IP address and press Add or Enter. The app adds it only if it answers ping and the Redfish login works. A message under the form says what happened: added, invalid address, already in the list, no ping, or login rejected. The row shows the serial number and the model.
-3. Before SSD integration, click Collect under Pre.
-4. Power down, integrate the SSD, power on.
+2. Type the iDRAC IP address and press Add or Enter. The app adds it only if it answers ping and the Redfish login works. A message under the form says what happened: added, invalid address, already in the list, no ping, or login rejected. The row shows the serial number, the model, and the iDRAC version with its firmware, for example `iDRAC9 7.10.30.00`.
+3. Before the work on the server, click Collect under Pre.
+4. Power down, do the work (for example install a part), power on.
 5. Click Collect under Post.
 6. Use Collect under General at any other time.
 7. Download files from the `TSR .zip` and `LC .xml` links under each stage. Hover a link to see the full file name. A stage shows the files of its latest run.
