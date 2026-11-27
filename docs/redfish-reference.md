@@ -28,3 +28,33 @@ Firmware compatibility:
 | iDRAC9 14G, 3.21.26.22 | Not supported. `DellLCService` returns 404 at the path above and at `/redfish/v1/Dell/Managers/iDRAC.Embedded.1/DellLCService`. The app reports `Failed: action not supported`. |
 
 The target is firmware 7.00.00 and above. Other versions are not checked ([Status and open items](status.md)).
+
+## Legacy firmware
+
+Firmware without `DellLCService` (for example 3.21.26.22 on a 14G R640) fails with `action not supported`. The Redfish collection route does not work on it.
+
+Status: the racadm method is not tested. It is out of scope. If a device with this firmware shows up in the lab, collect the logs manually.
+
+The points below come from Dell documentation and are unverified for this firmware.
+
+### racadm candidate
+
+- Collection: `racadm supportassist collect` or `racadm techsupreport collect`. The command name differs by iDRAC generation and firmware, and the sources disagree.
+- Export: CIFS, NFS, FTP or TFTP share, or a local file.
+- Remote use: `racadm -r <ip> -u <user> -p <password>`.
+
+### Pros
+
+- Dell's own supported route.
+- Reaches firmware with no Redfish collection action.
+
+### Cons
+
+- Command syntax must be confirmed on the real firmware.
+- Export needs a share, and a plain download is not confirmed.
+- racadm is a separate Dell install, which adds a dependency to the container.
+- Breaks the plain-Redfish design and makes job status harder to poll.
+
+### Decision
+
+Out of scope. Manual collection for legacy firmware.

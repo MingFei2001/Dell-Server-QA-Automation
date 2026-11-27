@@ -38,7 +38,7 @@ Closed:
 Still open:
 
 9. A NAS for backup. The nightly rsync stays disabled until one exists. VM snapshots are taken by hand, or by a Proxmox schedule if the owner sets one up. They are not a requirement, because the container can be rebuilt from the repository. Owner: Mingfei.
-10. A legacy method for firmware without `DellLCService`, such as 3.21.26.22. Racadm is the candidate. See [Legacy firmware](redfish-reference.md).
+10. Legacy firmware: racadm not tested, out of scope. Collect manually if such a device appears. Notes in [Legacy firmware](redfish-reference.md#legacy-firmware).
 14. A fixed address or DHCP reservation for the VM, so the dashboard link stays the same.
 
 Later, when more servers are on hand:
